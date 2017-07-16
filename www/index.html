@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/semantic.css">
+        <title>Sms App</title>
+    </head>
+    <body>
+        <div class="app" id="app">
+			<div class="ui center aligned container">
+	            <h1>SMS APP</h1>
+			</div>
+            <div class="ui button container red" v-if="smthingSelected" @click.stop="cancel">Back</div>
+            <!-- titles list -->
+            <div class="ui raised container segments" v-if="!smthingSelected" >
+            	<div class="ui padded center aligned inverted green segment" @click.stop="birthdaySms(nextBirthdayUser)">
+            		<h3>Next Birthday</h3>
+            		<p>{{nextBirthdayUser.name}}</p>
+            		<p>{{nextBirthdayUser.dob.toString().split(" ")[1]+" "+nextBirthdayUser.dob.toString().split(" ")[2]}}</p>
+            		<p>{{jsonData[nextBirthdayUser.titleIndex].title}}</p>
+            	</div>
+                <div class="ui padded segment" @click.stop="titleClicked(index)" v-for="data,index in jsonData">
+                    {{data.title}}
+                </div>
+            </div>
+            <!-- end of titles list -->
+            <!-- users list -->
+            <div class="ui container" v-if="titleSelected">
+            <h2>{{jsonData[titleIndex].title}}</h2>
+            <div class="ui button blue fluid" @click.stop="addNewUserClicked">Add New User</div>
+                <div class="ui segments" >
+                    <div class="ui segment" v-for="user,index in jsonData[titleIndex].users">
+                        <p>{{user.name}}</p>
+                        <p v-if="user.number">{{user.number}}</p>
+                        <p v-if="user.dob">{{user.dob}}</p>
+                        <div class="ui button" @click.stop="editUserClicked(index)">Edit</div>
+                        <div class="ui button" @click.stop="deleteUser(index)">Delete</div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of users list -->
+            <!-- new User form -->
+            <form v-if="newUserFormSelected" class="ui form conatiner">
+                <div class="field">
+                    <input type="text" id="newName" placeholder="Full Name">
+                </div>
+                <div class="field">
+                    <input type="tel" id="newNumber" placeholder="Mobile Number">
+                </div>
+                <div class="field">
+                    <input type="date" id="newDob">
+                </div>
+                <button @click="addNewUser">Add User</button>
+            </form>
+            <!-- end of New User Form -->
+            <!-- Edit user form -->
+            <form v-if="editUserFormSelected" class="ui form conatiner">
+                <div class="field">
+                    <input type="text" id="editName" placeholder="Full Name">
+                </div>
+                <div class="field">
+                    <input type="tel" id="editNumber" placeholder="Mobile Number">
+                </div>
+                <div class="field">
+                    <input type="date" id="editDob">
+                </div>
+                <button @click="editUser">Edit User</button>
+            </form>
+            <!-- Edit user form end -->
+        </div>
+        <script type="text/javascript" src="js/vue.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>
