@@ -84,6 +84,7 @@ var app = {
 		cordova.plugins.backgroundMode.on('deactivate', function(){
 			createSortedUsers();
 			vm.nextBirthdayUser = users[0];
+			vm.handleBirthday();
 		});
 		cordova.plugins.backgroundMode.excludeFromTaskList();
 		cordova.plugins.backgroundMode.enable();
@@ -193,20 +194,20 @@ var app = {
 						}
 					};
 					var success = function () { 
-					navigator.notification.alert(
-					    'Message sent to '+number+' !',  // message
-					    function(){console.log("works");},         // callback
-					    'SMS',            // title
-					    'Ok'                  // buttonName
-						);
+					// navigator.notification.alert(
+					//     'Message sent to '+number+' !',  // message
+					//     function(){console.log("works");},         // callback
+					//     'SMS',            // title
+					//     'Ok'                  // buttonName
+					// 	);
 					};
 					var error = function (e) { 
-						navigator.notification.alert(
-						    'SMS Error',  // message
-						    function(){},         // callback
-						    'SMS',            // title
-						    'Ok'                  // buttonName
-						);
+						// navigator.notification.alert(
+						//     'SMS Error',  // message
+						//     function(){},         // callback
+						//     'SMS',            // title
+						//     'Ok'                  // buttonName
+						// );
 					};
 					sms.send(number, message, options, success, error);
 				},
