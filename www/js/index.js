@@ -37,8 +37,15 @@ function createSortedUsers(){
 				var year = temp[2];
 				var month = parseInt(temp[1])-1;
 				var day = temp[0];
-				var dateNow = new Date();
+				var tempDate = new Date();
+				var dateNow = new Date(tempDate.getFullYear(),tempDate.getMonth(),tempDate.getDate());
+				var compDate = new Date(tempDate.getFullYear(),month,day);
 				var newDate = new Date(year,month,day);
+				if(user.name=="Rajan Bhatt"){
+					console.log('Datenow-'+dateNow);
+					console.log('compdate-'+compDate);
+					console.log((dateNow.getMonth()<newDate.getMonth())  || (dateNow.getMonth() == newDate.getMonth()  && dateNow.getDate() < newDate.getDate()));
+				}
 				if((dateNow.getMonth()<newDate.getMonth())  || (dateNow.getMonth() == newDate.getMonth()  && dateNow.getDate() < newDate.getDate())){
 					users.push({
 						name:user.name,
@@ -62,23 +69,31 @@ function dateSort(a,b){
 	}
 }
 createSortedUsers();
-console.table(users);
+// console.table(users);
 //d is now containing all of the data required
 var vm;
 var app = {
 	// Application Constructor
 	initialize: function() {
 		document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
-			this.setupVue();
+		this.setupVue();
 		document.addEventListener("backbutton", vm.cancel, false);
 	},
 	onDeviceReady: function() {
 		this.receivedEvent('deviceready');
+		cordova.plugins.backgroundMode.on('deactivate', function(){
+			createSortedUsers();
+			vm.nextBirthdayUser = users[0];
+		});
 		cordova.plugins.backgroundMode.excludeFromTaskList();
 		cordova.plugins.backgroundMode.enable();
-		
-		// setTimeout(vm.sendSms,3000);
-		// setTimeout(vm.sendSms,6000);
+		cordova.plugins.backgroundMode.setDefaults({
+		    title: 'SmsApp',
+		    text: 'App Running in Background',
+		});
+		if(!hasRanBefore){
+			vm.getPermforSms();
+		}
 	},
 	receivedEvent: function(id) {
 		console.log('Received Event: ' + id);
@@ -96,7 +111,8 @@ var app = {
 				newUserFormSelected:false,
 				editUserFormSelected:false,
 				nextBirthdayUser : users[0],
-				birthdaytimeout:null
+				birthdaytimeout:null,
+				usersLength:users.length
 			},
 
 			methods:{
@@ -124,17 +140,13 @@ var app = {
 					this.editUserFormSelected = true;
 					this.smthingSelected = true;
 					this.titleSelected = false;
-					console.log("Before");
 					var v = this;
 					setTimeout(function(){
-						console.log(v.titleIndex);
-						console.log("Inside");
 						var user = v.jsonData[v.titleIndex].users[v.userIndex];
 						document.getElementById('editName').value = user.name;
 						document.getElementById('editNumber').value = user.number;
 						document.getElementById('editDob').value = user.dob.split("-").reverse().join("-");
-					},500);
-					console.log("After");
+					},250);
 				},
 				deleteUser:function(index){
 					this.jsonData[this.titleIndex].users.splice(index,1);
@@ -174,10 +186,10 @@ var app = {
 					console.log("number=" + number + ", message= " + message);
 					//CONFIGURATION
 					var options = {
-					replaceLineBreaks: false, // true to replace \n by a new line, false by default
-					android: {
-						// intent: 'INTENT'  // send SMS with the native android SMS messaging
-						intent: '' // send SMS without open any other app
+						replaceLineBreaks: false, // true to replace \n by a new line, false by default
+						android: {
+							// intent: 'INTENT'  // send SMS with the native android SMS messaging
+							intent: '' // send SMS without open any other app
 						}
 					};
 					var success = function () { 
@@ -198,6 +210,9 @@ var app = {
 					};
 					sms.send(number, message, options, success, error);
 				},
+				getPermforSms:function(){
+					sms.send();
+				},
 				handleBirthday:function(){
 					if(this.birthdaytimeout){
 						clearTimeout(this.birthdaytimeout);
@@ -211,17 +226,27 @@ var app = {
 						that.sendSms(that.nextBirthdayUser)
 						createSortedUsers();
 						this.nextBirthdayUser = users[0];
-					},timeoutTime);
-					if(this.nextBirthdayUser){
-						this.handleBirthday();
-					}else{
-						waitForNewYear();
-					}
+						if(this.nextBirthdayUser){
+							this.handleBirthday();
+						}else{
+							//if no users birthday is left, we will wait for the ear to finish, and let the new cycle start
+							waitForNewYear();
+						}
+					},timeoutTime);	
 				},
-				waitForNewYear:function()
+				waitForNewYear:function(){
+					var now = new Date();
+					var timeoutTime = new Date(now.getFullYear+1,0,1) - now;
+					var that = this;
+					setTimeout(function(){
+						that.handleBirthday();
+					},timeoutTime);
+				}
 			},
 			created:function(){
-
+				createSortedUsers();
+				this.nextBirthdayUser = users[0];
+				this.handleBirthday();
 			}
 		});
 	}

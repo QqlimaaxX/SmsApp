@@ -7,22 +7,28 @@
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/semantic.css">
         <title>Sms App</title>
+        <style>
+            .hov:hover{
+                background: #EEE;
+            }
+        </style>
     </head>
     <body>
         <div class="app" id="app">
 			<div class="ui center aligned container">
 	            <h1>SMS APP</h1>
 			</div>
-            <div class="ui button container red" v-if="smthingSelected" @click.stop="cancel">Back</div>
+            <div class="ui segment button container red" v-if="smthingSelected" @click.stop="cancel">Back</div>
             <!-- titles list -->
             <div class="ui raised container segments" v-if="!smthingSelected" >
-            	<div class="ui padded center aligned inverted green segment" @click.stop="birthdaySms(nextBirthdayUser)">
+            	<div class="ui padded center aligned inverted green segment">
             		<h3>Next Birthday</h3>
-            		<p>{{nextBirthdayUser.name}}</p>
+            		<div class="ui segment">{{nextBirthdayUser.name}}</div>
             		<p>{{nextBirthdayUser.dob.toString().split(" ")[1]+" "+nextBirthdayUser.dob.toString().split(" ")[2]}}</p>
             		<p>{{jsonData[nextBirthdayUser.titleIndex].title}}</p>
+                    <p>Total upcoming birthdays - {{usersLength}}</p>
             	</div>
-                <div class="ui padded segment" @click.stop="titleClicked(index)" v-for="data,index in jsonData">
+                <div class="ui padded segment hov" @click.stop="titleClicked(index)" v-for="data,index in jsonData">
                     {{data.title}}
                 </div>
             </div>
@@ -30,7 +36,7 @@
             <!-- users list -->
             <div class="ui container" v-if="titleSelected">
             <h2>{{jsonData[titleIndex].title}}</h2>
-            <div class="ui button blue fluid" @click.stop="addNewUserClicked">Add New User</div>
+            <div class="ui segment button blue fluid" @click.stop="addNewUserClicked">Add New User</div>
                 <div class="ui segments" >
                     <div class="ui segment" v-for="user,index in jsonData[titleIndex].users">
                         <p>{{user.name}}</p>
@@ -43,31 +49,31 @@
             </div>
             <!-- end of users list -->
             <!-- new User form -->
-            <form v-if="newUserFormSelected" class="ui form conatiner">
+            <form v-if="newUserFormSelected" @submit.prevent="addNewUser" class="ui form container">
                 <div class="field">
-                    <input type="text" id="newName" placeholder="Full Name">
+                    <input type="text" id="newName"  required placeholder="Full Name">
                 </div>
                 <div class="field">
-                    <input type="tel" id="newNumber" placeholder="Mobile Number">
+                    <input type="tel" id="newNumber" required placeholder="Mobile Number">
                 </div>
                 <div class="field">
-                    <input type="date" id="newDob">
+                    <input type="date" id="newDob" required>
                 </div>
-                <button @click="addNewUser">Add User</button>
+                <button class="ui button blue fluid">Add User</button>
             </form>
             <!-- end of New User Form -->
             <!-- Edit user form -->
-            <form v-if="editUserFormSelected" class="ui form conatiner">
+            <form v-if="editUserFormSelected" @submit.prevent="editUser" class="ui form container">
                 <div class="field">
-                    <input type="text" id="editName" placeholder="Full Name">
+                    <input type="text" id="editName" required placeholder="Full Name">
                 </div>
                 <div class="field">
-                    <input type="tel" id="editNumber" placeholder="Mobile Number">
+                    <input type="tel" id="editNumber" required placeholder="Mobile Number">
                 </div>
                 <div class="field">
-                    <input type="date" id="editDob">
+                    <input type="date" id="editDob" required>
                 </div>
-                <button @click="editUser">Edit User</button>
+                <button class="ui button blue fluid" >Edit User</button>
             </form>
             <!-- Edit user form end -->
         </div>
