@@ -41,11 +41,6 @@ function createSortedUsers(){
 				var dateNow = new Date(tempDate.getFullYear(),tempDate.getMonth(),tempDate.getDate());
 				var compDate = new Date(tempDate.getFullYear(),month,day);
 				var newDate = new Date(year,month,day);
-				if(user.name=="Rajan Bhatt"){
-					console.log('Datenow-'+dateNow);
-					console.log('compdate-'+compDate);
-					console.log((dateNow.getMonth()<newDate.getMonth())  || (dateNow.getMonth() == newDate.getMonth()  && dateNow.getDate() < newDate.getDate()));
-				}
 				if((dateNow.getMonth()<newDate.getMonth())  || (dateNow.getMonth() == newDate.getMonth()  && dateNow.getDate() < newDate.getDate())){
 					users.push({
 						name:user.name,
@@ -111,28 +106,34 @@ var app = {
 				smthingSelected:false,
 				newUserFormSelected:false,
 				editUserFormSelected:false,
+				smsFormSelected:false,
 				nextBirthdayUser : users[0],
 				birthdaytimeout:null,
-				usersLength:users.length
+				usersLength:users.length,
+				message:"जन्मदिन की शुभकामनाएं !\n\nमाना की अघेंरा घना है, पर  दिया जलाना  कहां मना है!\nस्वस्थ रहो. खुश रहो.\n\n-मूलचंद जैन\nसरल मार्केटिंग",
 			},
-
 			methods:{
 				titleClicked:function(index){
 					this.titleSelected = true;
 					this.smthingSelected = true;
 					this.titleIndex = index ;
-					console.log(this.jsonData[index]);
 				},
 				cancel:function(){
 					this.titleSelected = false;
 					this.newUserFormSelected = false;
 					this.editUserFormSelected = false;
 					this.smthingSelected = false;
+					this.smsFormSelected = false;
 					this.titleIndex = null;
 					this.userIndex = null;
 				},
 				addNewUserClicked:function(){
 					this.newUserFormSelected = true;
+					this.smthingSelected = true;
+					this.titleSelected = false;
+				},
+				editsmsClicked:function(){
+					this.smsFormSelected = true;
 					this.smthingSelected = true;
 					this.titleSelected = false;
 				},
@@ -183,8 +184,7 @@ var app = {
 				},
 				sendSms: function(user) {
 					var number = user.number;
-					var message = "Happy Birthday "+user.name.split(" ")[0]+". Wish you lots of succcess and prosperous life.";
-					console.log("number=" + number + ", message= " + message);
+					var message = this.message;
 					//CONFIGURATION
 					var options = {
 						replaceLineBreaks: false, // true to replace \n by a new line, false by default

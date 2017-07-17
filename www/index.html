@@ -6,38 +6,48 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/semantic.css">
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
         <title>Sms App</title>
         <style>
             .hov:hover{
                 background: #EEE;
             }
+            body{
+            	background: #FFAFBD;  /* fallback for old browsers */
+            	background: -webkit-linear-gradient(to right, #ffc3a0, #FFAFBD);  /* Chrome 10-25, Safari 5.1-6 */
+            	background: linear-gradient(to right, #ffc3a0, #FFAFBD); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+            }
         </style>
     </head>
     <body>
         <div class="app" id="app">
-			<div class="ui center aligned container">
-	            <h1>SMS APP</h1>
-			</div>
             <div class="ui segment button container red" v-if="smthingSelected" @click.stop="cancel">Back</div>
             <!-- titles list -->
             <div class="ui raised container segments" v-if="!smthingSelected" >
+				<div v-if="!smthingSelected" class="ui center aligned segment">
+		            <h1>SMS APP</h1>
+				</div>
             	<div class="ui padded center aligned inverted green segment">
-            		<h3>Next Birthday</h3>
+            		<h3><i class="fa fa-birthday-cake" aria-hidden="true"></i> Next Birthday</h3>
             		<div class="ui segment">{{nextBirthdayUser.name}}</div>
-            		<p>{{nextBirthdayUser.dob.toString().split(" ")[1]+" "+nextBirthdayUser.dob.toString().split(" ")[2]}}</p>
-            		<p>{{jsonData[nextBirthdayUser.titleIndex].title}}</p>
+            		<p><i class="fa fa-calendar" aria-hidden="true"></i> {{nextBirthdayUser.dob.toString().split(" ")[1]+" "+nextBirthdayUser.dob.toString().split(" ")[2]}}</p>
+            		<p><i class="fa fa-home" aria-hidden="true"></i> {{jsonData[nextBirthdayUser.titleIndex].title}}</p>
                     <p>Total upcoming birthdays - {{usersLength}}</p>
             	</div>
                 <div class="ui padded segment hov" @click.stop="titleClicked(index)" v-for="data,index in jsonData">
                     {{data.title}}
                 </div>
+                <div class="ui padded segment hov" @click.stop="editsmsClicked">
+                	<div class="ui fluid yellow button"><i class="fa fa-pencil" aria-hidden="true"></i> Edit Birthday Message</div>
+                </div>
             </div>
             <!-- end of titles list -->
             <!-- users list -->
             <div class="ui container" v-if="titleSelected">
-            <h2>{{jsonData[titleIndex].title}}</h2>
-            <div class="ui segment button blue fluid" @click.stop="addNewUserClicked">Add New User</div>
                 <div class="ui segments" >
+		           	<div class="ui segment"><h2>{{jsonData[titleIndex].title}}</h2></div>
+		            <div class="ui segment button blue fluid" @click.stop="addNewUserClicked">Add New User</div>
                     <div class="ui segment" v-for="user,index in jsonData[titleIndex].users">
                         <p>{{user.name}}</p>
                         <p v-if="user.number">{{user.number}}</p>
@@ -76,6 +86,13 @@
                 <button class="ui button blue fluid" >Edit User</button>
             </form>
             <!-- Edit user form end -->
+            <!-- SMS form starts -->
+            <form v-if="smsFormSelected" @submit.prevent="cancel" class="ui form container">
+                <div class="field">
+                    <textarea rows="20" cols="50" v-model="message"></textarea>
+                </div>
+            </form>
+            <!-- SMS form ends -->
         </div>
         <script type="text/javascript" src="js/vue.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
